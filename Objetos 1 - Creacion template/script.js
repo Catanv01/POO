@@ -1,8 +1,26 @@
-function Carro(marca, modelo, anio, color) {
-    this.marca = marca ; //This hace referencia al objeto
-    this.modelo = modelo ;
-    this.anio = anio ;
-    this.color = color ;
+function Carro(marca, modelo, anio, color, cantidad) {
+    if (marca.length > 20 || marca == ""){
+        alert("")
+    }
+    this.marca = marca; //This hace referencia al objeto
+    this.modelo = modelo;
+    this.anio = anio;
+    this.color = color;
+    this.cantidad = cantidad || 1;
+
+    this.getInfo = function () {
+        return `${this.marca} ${this.modelo} (${this.anio}) - Color: ${this.color}`;
+    };
+
+    this.aumentarCantidad = function () {
+        this.cantidad += 1;
+    };
+
+    this.disminuirCantidad = function () {
+        if (this.cantidad > 1) {
+            this.cantidad -= 1;
+        }
+    };
 }
 
 // let miCarro = new Carro("Ford","Munstang",2022,"Rojo") //New para poder llamar al constructor y crear un nuevo carro
@@ -13,66 +31,126 @@ let listaCarros = [];
 const form = document.getElementById('carForm');
 const carsContainer = document.getElementById('carsContainer');
 
-function renderCarList() {
+function renderCarList(listaArenderizar) {
     carsContainer.innerHTML = '';
 
-    console.log(listaCarros)
-    
-    if (listaCarros.length === 0) {
+    if (listaArenderizar.length === 0) {
         carsContainer.innerHTML = '<p class="no-cars">No hay carros en la lista</p>';
         return;
     }
-    
-    listaCarros.forEach((carro, index) => {
-        console.log(carro)
+
+    listaArenderizar.forEach((carro, index) => {
         const carCard = document.createElement('div');
         carCard.className = 'car-card';
-        
+
         carCard.innerHTML = `
-            <div class="car-info">
+            <div class="car-details">
                 <h3>${carro.marca} ${carro.modelo}</h3>
                 <p>Año: ${carro.anio}</p>
                 <p>Color: ${carro.color}</p>
+                <p>Cantidad: </p>
+                <div class="quantity-controls">
+                    <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
+                    <span class="quantity-value">${carro.cantidad}</span>
+                    <button class="quantity-btn increase-btn" data-index="${index}">+</button>
+                </div>
             </div>
-            <button class="delete-btn" data-index="${index}">Eliminar</button>
+            <div class="car-actions">
+                <button class="delete-btn" data-index="${index}">Eliminar</button>
+            </div>
         `;
-        
         carsContainer.appendChild(carCard);
     });
-    
     document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const index = parseInt(this.getAttribute('data-index'));
             eliminarCarro(index);
         });
     });
+
+    document.querySelectorAll('.increase-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = parseInt(this.getAttribute('data-index'));
+            listaCarros[index].aumentarCantidad();
+            renderCarList();
+        });
+    });
+    document.querySelectorAll('.decrease-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = parseInt(this.getAttribute('data-index'));
+            listaCarros[index].disminuirCantidad();
+            renderCarList();
+        });
+    });
 }
+
 
 function agregarCarro(event) {
     event.preventDefault();
-    
+
     const marca = document.getElementById("marca").value;
     const modelo = document.getElementById("modelo").value;
     const anio = parseInt(document.getElementById("anio").value);
     const color = document.getElementById("color").value;
+    const cantidad = parseInt(document.getElementById('cantidad').value);
 
 
-    const nuevoCarro = new Carro(marca,modelo,anio,color);
+    const nuevoCarro = new Carro(marca, modelo, anio, color);
 
     listaCarros.push(nuevoCarro)
-    renderCarList();
+    renderCarList(listaCarros);
 }
 
 function eliminarCarro(index) {
 
-   listaCarros.splice(index)
-   renderCarList()
+    listaCarros.splice(index)
+    renderCarList(listaCarros)
 }
 
 form.addEventListener('submit', agregarCarro);
 
-listaCarros.push(new Carro("Toyota","Corolla",2022,"Rojo"));
-listaCarros.push(new Carro("Honda","Civic",2021,"Azul"));
-listaCarros.push(new Carro("Chevrolet","Spark",2020,"Negro"));
+listaCarros.push(new Carro("Toyota", "Corolla", 2022, "Rojo"));
+listaCarros.push(new Carro("Honda", "Civic", 2021, "Azul"));
+listaCarros.push(new Carro("Chevrolet", "Spark", 2020, "Negro"));
 
-renderCarList()
+
+function buscarCarro() {
+    busqueda = document.getElementById("searchInput").value
+
+    if (busqueda == "") {
+        renderCarList(listaCarros);
+        return;
+    }
+    resultadoBuscado = listaCarros.filter(
+        carro => carro.marca == busqueda
+    );
+    renderCarList(resultadoBuscado)
+}
+function ultimosDeLaLista(){
+    renderCarList(listaCarros.slice(-1));
+}
+
+document.getElementById("searchButton").addEventListener(
+    'click', function () {
+        buscarCarro();
+    }
+)
+document.getElementById("searchInput").addEventListener(
+    'keypress', function (event) {
+        if (event.key === 'Enter') {
+            buscarCarro();
+        }
+    }
+)
+
+document.getElementById("searchAll").addEventListener(
+    'click', function () {
+        renderCarList(listaCarros);
+    }
+)
+document.getElementById("searchLast").addEventListener(
+    'click', function () {
+        ultimosDeLaLista()
+    }
+)
+renderCarList(listaCarros)

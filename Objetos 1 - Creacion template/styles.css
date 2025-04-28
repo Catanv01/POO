@@ -43,7 +43,12 @@ input {
     border-radius: 4px;
     box-sizing: border-box;
 }
-
+.search-container{
+    display: flex;
+}
+#searchButton{
+    margin-left: 2%;
+}
 button {
     background-color: #3498db;
     color: white;
@@ -92,4 +97,43 @@ button:hover {
 .no-cars {
     color: #7f8c8d;
     font-style: italic;
+}
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+}
+
+.quantity-btn:hover {
+    background-color: #2980b9;
+}
+
+.quantity-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.car-details {
+    flex-grow: 1;
+}
+
+.car-actions {
+    display: flex;
+    align-items: center;
 }
