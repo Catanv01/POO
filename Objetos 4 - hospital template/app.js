@@ -1,16 +1,36 @@
 // Falta Constructor para Doctores
 function Doctor(id, nombre, especialidad) {
-
+    this.id = id;
+    this.nombre = nombre;
+    this.especialidad = especialidad;
+    this.getInfo = function(){
+        return this.nombre
+    }
 }
 
 // Falta Constructor para Pacientes
 function Paciente(id, nombre, edad, telefono) {
-
+    this.id = id;
+    this.nombre = nombre;
+    this.edad = edad;
+    this.telefono = telefono
+    this.getInfo = function(){
+        return this.nombre
+    }
 }
 
 // Falta Constructor para Citas
-function Cita(id, pacienteId, doctorId, fecha, motivo) {
-
+function Cita(id, pacienteId, doctorId, fecha, motivo, estado) {
+    this.id = id;
+    this.pacienteId = pacienteId;
+    this.doctorId = doctorId;
+    this.fecha = fecha;
+    this.motivo = motivo;
+    this.estado = estado;
+    this.cambiarFecha = function(nuevaFecha){
+        this.fecha = nuevaFecha
+        return this.fecha
+    }
 }
 
 // Base de datos simulada
@@ -21,38 +41,38 @@ const database = {
     nextDoctorId: 1,
     nextPacienteId: 1,
     nextCitaId: 1,
-    
-    agregarDoctor: function(nombre, especialidad) {
+
+    agregarDoctor: function (nombre, especialidad) {
         const doctor = new Doctor(this.nextDoctorId++, nombre, especialidad);
         this.doctores.push(doctor);
         return doctor;
     },
-    
-    agregarPaciente: function(nombre, edad, telefono) {
+
+    agregarPaciente: function (nombre, edad, telefono) {
         const paciente = new Paciente(this.nextPacienteId++, nombre, edad, telefono);
         this.pacientes.push(paciente);
         return paciente;
     },
-    
-    agregarCita: function(pacienteId, doctorId, fecha, motivo) {
-        const cita = new Cita(this.nextCitaId++, pacienteId, doctorId, fecha, motivo);
+
+    agregarCita: function (pacienteId, doctorId, fecha, motivo, estado) {
+        const cita = new Cita(this.nextCitaId++, pacienteId, doctorId, fecha, motivo, estado);
         this.citas.push(cita);
         return cita;
     },
-    
-    getDoctorById: function(id) {
+
+    getDoctorById: function (id) {
         return this.doctores.find(d => d.id === id);
     },
-    
-    getPacienteById: function(id) {
+
+    getPacienteById: function (id) {
         return this.pacientes.find(p => p.id === id);
     },
-    
-    getCitaById: function(id) {
+
+    getCitaById: function (id) {
         return this.citas.find(c => c.id === id);
     },
-    
-    actualizarCita: function(citaActualizada) {
+
+    actualizarCita: function (citaActualizada) {
         const index = this.citas.findIndex(c => c.id === citaActualizada.id);
         if (index !== -1) {
             this.citas[index] = citaActualizada;
@@ -60,8 +80,8 @@ const database = {
         }
         return false;
     },
-    
-    eliminarDoctor: function(id) {
+
+    eliminarDoctor: function (id) {
         const index = this.doctores.findIndex(d => d.id === id);
         if (index !== -1) {
             this.doctores.splice(index, 1);
@@ -69,8 +89,8 @@ const database = {
         }
         return false;
     },
-    
-    eliminarPaciente: function(id) {
+
+    eliminarPaciente: function (id) {
         const index = this.pacientes.findIndex(p => p.id === id);
         if (index !== -1) {
             this.pacientes.splice(index, 1);
@@ -84,7 +104,7 @@ const database = {
 function renderDoctores() {
     const tbody = document.querySelector('#doctoresTable tbody');
     tbody.innerHTML = '';
-    
+
     database.doctores.forEach(doctor => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -102,7 +122,7 @@ function renderDoctores() {
 function renderPacientes() {
     const tbody = document.querySelector('#pacientesTable tbody');
     tbody.innerHTML = '';
-    
+
     database.pacientes.forEach(paciente => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -116,7 +136,7 @@ function renderPacientes() {
         `;
         tbody.appendChild(tr);
     });
-    
+
     // Actualizar select de pacientes en citas
     const select = document.getElementById('citaPaciente');
     select.innerHTML = '';
@@ -131,11 +151,11 @@ function renderPacientes() {
 function renderCitas() {
     const tbody = document.querySelector('#citasTable tbody');
     tbody.innerHTML = '';
-    
+
     database.citas.forEach(cita => {
         const paciente = database.getPacienteById(cita.pacienteId);
         const doctor = database.getDoctorById(cita.doctorId);
-        
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${cita.id}</td>
@@ -157,14 +177,14 @@ function renderCitas() {
 function actualizarSelects() {
     const doctorSelect = document.getElementById('citaDoctor');
     doctorSelect.innerHTML = '';
-    
+
     database.doctores.forEach(doctor => {
         const option = document.createElement('option');
         option.value = doctor.id;
         option.textContent = doctor.getInfo();
         doctorSelect.appendChild(option);
     });
-    
+
     renderPacientes(); // Esto actualiza el select de pacientes también
 }
 
@@ -172,16 +192,16 @@ function actualizarSelects() {
 function agregarDoctor() {
     const nombre = document.getElementById('doctorNombre').value;
     const especialidad = document.getElementById('doctorEspecialidad').value;
-    
+
     if (!nombre || !especialidad) {
         alert('Por favor complete todos los campos');
         return;
     }
-    
+
     database.agregarDoctor(nombre, especialidad);
     renderDoctores();
     actualizarSelects();
-    
+
     // Limpiar formulario
     document.getElementById('doctorNombre').value = '';
     document.getElementById('doctorEspecialidad').value = '';
@@ -191,15 +211,15 @@ function agregarPaciente() {
     const nombre = document.getElementById('pacienteNombre').value;
     const edad = parseInt(document.getElementById('pacienteEdad').value);
     const telefono = document.getElementById('pacienteTelefono').value;
-    
+
     if (!nombre || isNaN(edad) || !telefono) {
         alert('Por favor complete todos los campos correctamente');
         return;
     }
-    
+
     database.agregarPaciente(nombre, edad, telefono);
     renderPacientes();
-    
+
     // Limpiar formulario
     document.getElementById('pacienteNombre').value = '';
     document.getElementById('pacienteEdad').value = '';
@@ -211,15 +231,15 @@ function agregarCita() {
     const doctorId = parseInt(document.getElementById('citaDoctor').value);
     const fecha = document.getElementById('citaFecha').value;
     const motivo = document.getElementById('citaMotivo').value;
-    
+
     if (!pacienteId || !doctorId || !fecha || !motivo) {
         alert('Por favor complete todos los campos');
         return;
     }
-    
-    database.agregarCita(pacienteId, doctorId, fecha, motivo);
+
+    database.agregarCita(pacienteId, doctorId, fecha, motivo, "Pendiente");
     renderCitas();
-    
+
     // Limpiar formulario
     document.getElementById('citaFecha').value = '';
     document.getElementById('citaMotivo').value = '';
@@ -239,7 +259,7 @@ function eliminarPaciente(id) {
     if (confirm('¿Está seguro de eliminar este paciente? Esto también eliminará sus citas programadas.')) {
         // Eliminar citas asociadas primero
         database.citas = database.citas.filter(c => c.pacienteId !== id);
-        
+
         if (database.eliminarPaciente(id)) {
             renderPacientes();
             renderCitas();
@@ -259,12 +279,11 @@ function cancelarCita(id) {
 function editarCita(id) {
     const cita = database.getCitaById(id);
     if (!cita) return;
-    
-    const nuevaFecha = prompt('Ingrese la nueva fecha y hora (YYYY-MM-DD HH:MM):', 
-                           cita.fecha.toISOString().slice(0, 16));
+    const nuevaFecha = prompt('Ingrese la nueva fecha y hora (YYYY-MM-DD HH:MM):',
+        cita.fecha.slice(0, 16));
     
     if (nuevaFecha) {
-        cita.cambiarFecha(nuevaFecha);
+        cita.cambiarFecha(Date.parse(nuevaFecha+":00.000Z").toISOString());
         database.actualizarCita(cita);
         renderCitas();
     }
@@ -281,20 +300,20 @@ function inicializarDatosEjemplo() {
     database.agregarDoctor('Dr. Pérez', 'Cardiología');
     database.agregarDoctor('Dra. Gómez', 'Pediatría');
     database.agregarDoctor('Dr. Rodríguez', 'Neurología');
-    
+
     // Pacientes
     database.agregarPaciente('Juan Martínez', 35, '555-1234');
     database.agregarPaciente('María López', 28, '555-5678');
     database.agregarPaciente('Carlos Sánchez', 42, '555-9012');
-    
+
     // Citas
     const hoy = new Date();
     const manana = new Date();
     manana.setDate(hoy.getDate() + 1);
-    
-    database.agregarCita(1, 1, hoy.toISOString(), 'Consulta rutinaria');
-    database.agregarCita(2, 2, manana.toISOString(), 'Control infantil');
-    
+
+    database.agregarCita(1, 1, hoy.toISOString(), 'Consulta rutinaria', "Pendiente");
+    database.agregarCita(2, 2, manana.toISOString(), 'Control infantil', "Pendiente");
+
     // Renderizar todo
     renderDoctores();
     renderPacientes();
@@ -303,9 +322,9 @@ function inicializarDatosEjemplo() {
 }
 
 // Iniciar la aplicación
-window.onload = function() {
+window.onload = function () {
     inicializarDatosEjemplo();
-    
+
     // Hacer las funciones accesibles desde el onclick en HTML
     window.eliminarDoctor = eliminarDoctor;
     window.eliminarPaciente = eliminarPaciente;
